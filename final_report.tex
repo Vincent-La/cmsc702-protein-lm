@@ -1,9 +1,15 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
 
+\usepackage[numbers]{natbib}  % uses numbers for citations
+% \usepackage[semicolon]{natbib}
+\usepackage{url}
+
 \title{CMSC702 Project}
 \author{Vincent La}
 \date{November 2024}
+
+
 
 \begin{document}
 
@@ -11,7 +17,17 @@
 
 
 \section{Overview}
-The construction of multiple sequence alignments (MSAs) of genetic sequences has long been a staple of computational phylogenetics. Recently, many in the field have sidestepped such conventional algorithms taking heavy inspiration from advancements in natural language processing (NLP) and bringing computational biology into the age of neural networks. The advent of neural transformer-based models, in particular protein large language models (LLMs), brings immense potential to further our understanding of protein structure, function, and evolution. 
+The construction of multiple sequence alignments (MSAs) of genetic sequences has long been a staple of computational phylogenetics. Recently, many in the field have sidestepped such conventional algorithms taking heavy inspiration from advancements in natural language processing (NLP) and bringing computational biology into the age of neural networks. The advent of neural transformer-based models, in particular protein language models (pLMs), such as ESM-2 \cite{ESM-FOLD}, bring immense potential to further our understanding of protein structure, function, and evolution. \\
 
+Alphafold \cite{AlphaFold}
+pydca \cite{pydca}
+PL-DCA \cite{Ekeberg}
+Mean-field DCA \cite{Morcos}
+pLM categorical-jacobian study \cite{Zhang}
+
+
+
+\bibliographystyle{unsrtnat} % orders by order of citatation in file
+\bibliography{refs}
 
 \end{document}
