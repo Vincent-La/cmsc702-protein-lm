@@ -1,3 +1,6 @@
 [submodule "pydca"]
 	path = pydca
 	url = git@github.com:KIT-MBS/pydca.git
+[submodule "py-mfdca"]
+	path = py-mfdca
+	url = git@github.com:utdal/py-mfdca.git
