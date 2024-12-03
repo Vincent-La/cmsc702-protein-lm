@@ -12,7 +12,9 @@ def main():
 
     df = pd.DataFrame(protein_family.DI)
     df.rename(columns={0: 'first_site', 1: 'second_site', 2: 'mf_dca'}, inplace=True)
-    df.to_csv(output_filename+'.csv')
+    df['first_site'] = df['first_site'].astype(int)
+    df['second_site'] = df['second_site'].astype(int)
+    df.to_csv(output_filename+'.csv', index=False)
 
 if __name__ == "__main__":
     main()
