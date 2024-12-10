@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
-from transformers import AutoTokenizer, EsmForProteinFolding
+from transformers import AutoTokenizer, EsmForProteinFolding, EsmModel
 from scipy.special import softmax
 import numpy as np
 
@@ -67,12 +67,12 @@ def parse_output(output, batch):
 
     return contacts
 
-# Compute contact matrix for each sequence in MSA using PL model 
-def plm_inference_per_sequence(model, 
-                               tokenizer, 
-                               msa_file, 
-                               batch_size,
-                               device):
+# Compute contact matrix for each sequence in MSA using ESM-FOLD model 
+def esmfold_inference_per_sequence(model, 
+                                   tokenizer, 
+                                   msa_file, 
+                                   batch_size,
+                                   device):
 
     # setup dataset and dataloader
     dataset = SequenceDataset(msa_file)
@@ -82,7 +82,7 @@ def plm_inference_per_sequence(model,
     # b/c numpy does not support jagged matrices
     contact_matrices = []
     with torch.no_grad():
-        for step, batch in enumerate(tqdm(eval_dataloader, f"PLM Inference on {os.path.basename(msa_file)}")):
+        for step, batch in enumerate(tqdm(eval_dataloader, f"ESM-FOLD Inference on {os.path.basename(msa_file)}")):
             inputs = tokenizer(batch, 
                                return_tensors = 'pt', 
                                padding = True,
@@ -97,7 +97,38 @@ def plm_inference_per_sequence(model,
     
     return contact_matrices
 
+
+# compute contact matrix for each sequence in MSA using ESM2 + Contact head
+def esm_contacthead_inference_per_sequence(model, 
+                                           tokenizer,
+                                           msa_file,
+                                           batch_size,
+                                           device):
     
+
+
+    # output matrices are padded to be the length of the largest sequence in batch can ignore
+    # contact probs > len of a given sequence 
+
+    dataset = SequenceDataset(msa_file)
+    eval_dataloader = DataLoader(dataset, batch_size = batch_size)
+
+    contact_matrices = []
+    with torch.no_grad():
+        for step, batch in enumerate(tqdm(eval_dataloader, f"ESM+ContactHead Inference on {os.path.basename(msa_file)}")):
+            inputs = tokenizer(batch, 
+                               return_tensors = 'pt', 
+                               padding = True,
+                               add_special_tokens=True)
+
+            inputs.to(device)
+
+            contacts = model.predict_contacts(inputs['input_ids'], inputs['attention_mask'])
+
+            # grabbing valid inidces for a give sequence
+            for i,seq in enumerate(batch):
+                contact_matrices.extend(contacts[i][:len(seq)][:len(seq)])
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -141,22 +172,39 @@ if __name__ == '__main__':
     args = parser.parse_args()
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    # Init model
-    model = EsmForProteinFolding.from_pretrained(args.plm_model)
-    model.to(device)
-
     # Init tokenizer
     tokenizer =  AutoTokenizer.from_pretrained(args.plm_model)
 
-    # Inference
-    contact_matrices = plm_inference_per_sequence(model, 
-                                                  tokenizer,
-                                                  args.msa_file,
-                                                  args.batch_size,
-                                                  device)
-    
+    # esm_fold
+    if args.plm_model == 'facebook/esmfold_v1':
+        # Init model
+        model = EsmForProteinFolding.from_pretrained(args.plm_model)
+        model.to(device)
+
+        # Inference
+        contact_matrices = esmfold_inference_per_sequence(model, 
+                                                    tokenizer,
+                                                    args.msa_file,
+                                                    args.batch_size,
+                                                    device)
+        
+    # esm-2 + contact head (logistic regression over contact maps)
+    elif args.plm_model == 'facebook/esm2_t36_3B_UR50D':
+        model = EsmModel.from_pretrained(args.plm_model)
+        model.to(device)
+
+        contact_matrices = esm_contacthead_inference_per_sequence(model,
+                                                                  tokenizer,
+                                                                  args.msa_file,
+                                                                  args.batch_size,
+                                                                  device)
+
+
+    os.makedirs(args.output_dir, exist_ok=True)
     print(f'Writing output to {args.output_dir}')
     # save out contact matrices
-    for i,matrix in enumerate(contact_matrices):
-        np.save(os.path.join(args.output_dir, f'{i}_{args.job_name}.npy'), matrix)
+    # for i,matrix in enumerate(contact_matrices):
+        # np.save(os.path.join(args.output_dir, f'{i}_{args.job_name}.npy'), matrix)
+    
+    np.savez_compressed(os.path.join(args.output_dir, args.job_name), *contact_matrices)
 

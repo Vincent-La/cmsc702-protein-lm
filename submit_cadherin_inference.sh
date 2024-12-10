@@ -21,7 +21,7 @@ micromamba activate protein-lm
 
 srun python scripts/esm_inference.py --msa_file data/cadherin/PF00028.alignment.seed \
                                      --batch_size 16 \
-                                     --output_dir results/cadherin/esmfold \
+                                     --output_dir results/cadherin/esmfold_test \
                                      --job_name cadherin
 
 
