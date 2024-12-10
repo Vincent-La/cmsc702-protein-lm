@@ -123,11 +123,13 @@ def esm_contacthead_inference_per_sequence(model,
 
             inputs.to(device)
 
-            contacts = model.predict_contacts(inputs['input_ids'], inputs['attention_mask'])
+            contacts = model.predict_contacts(inputs['input_ids'], inputs['attention_mask']).cpu().numpy()
 
-            # grabbing valid inidces for a give sequence
+            # grabbing valid indices for a give sequence
             for i,seq in enumerate(batch):
-                contact_matrices.extend(contacts[i][:len(seq)][:len(seq)])
+                contact_matrices.append(contacts[i, :len(seq), :len(seq)])
+
+    return contact_matrices
 
 
 if __name__ == '__main__':
