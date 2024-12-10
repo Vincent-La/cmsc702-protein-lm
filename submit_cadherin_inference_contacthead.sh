@@ -19,10 +19,11 @@ module load cuda
 source ~/.bashrc
 micromamba activate protein-lm
 
-srun python scripts/esm_inference.py --msa_file data/cadherin/PF00028.alignment.seed \
+srun python scripts/esm_inference.py --plm_model facebook/esm2_t36_3B_UR50D \
+                                     --msa_file data/cadherin/PF00028.alignment.seed \
                                      --batch_size 16 \
                                      --output_dir results/cadherin/esmfold_test \
-                                     --job_name cadherin
+                                     --job_name cadherin_contacthead
 
 
 wait                                                            # wait for any background processes to complete
