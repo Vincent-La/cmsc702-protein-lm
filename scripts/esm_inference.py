@@ -8,6 +8,7 @@ from Bio import AlignIO
 import os
 import argparse
 from tqdm import tqdm
+from utils.model_names import ESM_FOLD, ESM_CONTACT_HEAD
 
 
 # Custom pytorch dataset for holding raw sequence data
@@ -178,7 +179,7 @@ if __name__ == '__main__':
     tokenizer =  AutoTokenizer.from_pretrained(args.plm_model)
 
     # esm_fold
-    if args.plm_model == 'facebook/esmfold_v1':
+    if args.plm_model == ESM_FOLD:
         # Init model
         model = EsmForProteinFolding.from_pretrained(args.plm_model)
         model.to(device)
@@ -191,7 +192,7 @@ if __name__ == '__main__':
                                                     device)
         
     # esm-2 + contact head (logistic regression over contact maps)
-    elif args.plm_model == 'facebook/esm2_t36_3B_UR50D':
+    elif args.plm_model == ESM_CONTACT_HEAD:
         model = EsmModel.from_pretrained(args.plm_model)
         model.to(device)
 
