@@ -1,0 +1,56 @@
+(1) Average recall@L across each sequence in MSA: of the coupled DCA pairs how many of them are in the top-L esm predictions.
+Coupled DCA pairs determined by some cutoff, we shoud look at the output distributions but can also do plots as we move the cutoff
+
+
+
+
+(2) Precision@L b/w representative structure to generally compare how the methods actually are at contact prediction. 
+Among the Top-L predictions from esm, dca how many are true contacts. 
+We can actually vary L here to get a better feel of what proportion of DCA scores we can reasonably consider to be coupled 
+n
+
+
+We already have (2) directly compares ESM/DCA contact prediction with a "true" representative structure
+-- use precision@L as a comparison per what other people report
+
+
+|-------------  <--- (c)
+|             |
+|             | ------
+|                     |
+|                     |_______
+|
+|
+-------------------------------
+                 k
+
+
+
+The top c dca scores are actually coupled because they are actually in contact! We can consider these to be the relevant dca scores
+For the top L ESM predictions, how many of the top c dca score are retrieved
+
+intersect(topL esm contacts, top_c dca)/ c   <-- per sequence
+
+For (1):
+
+
+Recall@k = of all relevant instances how many are in the top k reccomendations
+         = for all coupled dca pairs how many are contained in the top k ESM ranking for {esm_fold, contact_head}
+
+
+as you increase K recall@k approaches 1, we can vary the k value for recall@k and compute averages over the msa
+
+
+
+plmdca_scores <-- plmdca(MSA)
+relevant 
+
+mfdca_scores <-- mfdca(MSA)
+
+for each seq in MSA:
+    ESM_FOLD_predictions <-- esm_fold_inference(seq)
+    ESM_CONTACT_HEAD predictions <-- esm_contact_head_inference(seq)
+
+    recall@k_esmfold
+    
+
