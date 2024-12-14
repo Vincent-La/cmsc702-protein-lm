@@ -73,22 +73,7 @@ def main():
                 records.append(record[L:R])
             elif record.seq not in seen:
                 seen.add(record.seq)
-                records.append(record)
-        
-        dp = [[-1 for _ in range(len(records))] for _ in range(len(records))]
-        for i in range(len(records)):
-            for j in range(len(records)):
-                # get similarity between site i and site j
-                if dp[j][i] != -1:
-                    dp[i][j] == dp[j][i]
-                elif i != j:
-                    a = records[i]
-                    b = records[j]
-                    dp[i][j] = similar(a,b)
-                else:
-                    dp[i][j] = 1
-        
-                    
+                records.append(record)       
                 
     except:
         print('could not parse file -> not in fasta format')
