@@ -47,6 +47,13 @@ def main():
     )
 
     parser.add_argument(
+        '--threshold',
+        type=float,
+        required=False,
+        help="the minimal non-gapped ratio per chosen sequence",
+    )
+
+    parser.add_argument(
         '--output_path',
         type=str,
         required=True,
@@ -60,20 +67,28 @@ def main():
     L = args.left
     R = args.right
     output_name = args.output_path
+    threshold = args.threshold
+    if threshold == None:
+        threshold = 0
     try:
         seen = set()
         records = []
+
+        def gap_ratio(seq):
+            return len(seq.replace('-',''))/len(seq)
 
         flag = True
         if L==None or R==None:
             flag = False
         for record in SeqIO.parse(file_path, 'fasta'): 
             if flag and record[L:R].seq not in seen:
-                seen.add(record[L:R].seq)
-                records.append(record[L:R])
+                if gap_ratio(record[L:R].seq) >= threshold:
+                    seen.add(record[L:R].seq)
+                    records.append(record[L:R])
             elif record.seq not in seen:
-                seen.add(record.seq)
-                records.append(record)       
+                if gap_ratio(record.seq) >= threshold:
+                    seen.add(record.seq)
+                    records.append(record)       
                 
     except:
         print('could not parse file -> not in fasta format')
