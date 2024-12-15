@@ -29,8 +29,10 @@ class SequenceDataset(Dataset):
     def _get_sequences(self):
         alignment = AlignIO.read(self.msa_file, 'stockholm')
         seqs = []
+
+        # extract raw sequence length and convert to upper case letters bc idk if that affects tokenization
         for record in alignment:
-            seqs.append(str(record.seq).replace('-', ''))
+            seqs.append(str(record.seq).replace('-', '').upper())
         
         return seqs
 
