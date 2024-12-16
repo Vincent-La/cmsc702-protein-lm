@@ -1,5 +1,6 @@
 *_full
-
+results/cadherin/cadherin_contacthead.npz
+results/rrm/rrm_contacthead.npz
 
 # ---- Python .gitignore template ----
 # Byte-compiled / optimized / DLL files

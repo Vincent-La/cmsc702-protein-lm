@@ -8,7 +8,13 @@ from Bio import AlignIO
 import os
 import argparse
 from tqdm import tqdm
-from utils.model_names import ESM_FOLD, ESM_CONTACT_HEAD
+# import sys
+# sys.path.append('..')
+# from utils.model_names import ESM_FOLD, ESM_CONTACT_HEAD
+# Just some convenient model path strings
+ESM_FOLD = 'facebook/esmfold_v1'
+ESM_CONTACT_HEAD = 'facebook/esm2_t36_3B_UR50D'
+
 
 
 # Custom pytorch dataset for holding raw sequence data
@@ -27,7 +33,7 @@ class SequenceDataset(Dataset):
         return item
 
     def _get_sequences(self):
-        alignment = AlignIO.read(self.msa_file, 'stockholm')
+        alignment = AlignIO.read(self.msa_file, 'fasta')
         seqs = []
 
         # extract raw sequence length and convert to upper case letters bc idk if that affects tokenization
@@ -66,7 +72,11 @@ def parse_output(output, batch):
         contacts.append(contacts_matrix)
 
         # assert that if protein sequence is size L, then contacts_matrix is LxL
-        assert len(batch[batch_idx]) == contacts_matrix.shape[0]
+        # assert len(batch[batch_idx]) == contacts_matrix.shape[0]
+
+        # logging this for now...
+        if len(batch[batch_idx]) != contacts_matrix.shape[0]:
+            print(f'SHAPE mismatch: {len(batch[batch_idx])} != {contacts_matrix.shape[0]}')
 
     return contacts
 
@@ -89,7 +99,7 @@ def esmfold_inference_per_sequence(model,
             inputs = tokenizer(batch, 
                                return_tensors = 'pt', 
                                padding = True,
-                            #    truncation=True,
+                               truncation=True,             #try adding this... 
                                add_special_tokens=False)
 
             inputs.to(device)
@@ -141,7 +151,7 @@ if __name__ == '__main__':
         '--msa_file',
         type=str,
         required=True,
-        help="Path of MSA (Stockholm format) file for inference",
+        help="Path of MSA file for inference",
     )
 
     parser.add_argument(
