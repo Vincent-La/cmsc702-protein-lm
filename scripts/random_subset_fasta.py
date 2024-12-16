@@ -85,7 +85,7 @@ def main():
                 if gap_ratio(record[L:R].seq) >= threshold:
                     seen.add(record[L:R].seq)
                     records.append(record[L:R])
-            elif record.seq not in seen:
+            elif not flag and record.seq not in seen:
                 if gap_ratio(record.seq) >= threshold:
                     seen.add(record.seq)
                     records.append(record)       
