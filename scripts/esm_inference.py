@@ -96,11 +96,31 @@ def esmfold_inference_per_sequence(model,
     contact_matrices = []
     with torch.no_grad():
         for step, batch in enumerate(tqdm(eval_dataloader, f"ESM-FOLD Inference on {os.path.basename(msa_file)}")):
-            inputs = tokenizer(batch, 
-                               return_tensors = 'pt', 
-                               padding = True,
-                               truncation=True,             #try adding this... 
-                               add_special_tokens=False)
+            
+            # SOMETIMEs tokenization fails and idk why
+            # manually write a garbage sequence to batch to preserve indexing
+            try:
+                inputs = tokenizer(batch, 
+                                return_tensors = 'pt', 
+                                padding = True,
+                                # truncation=True,             #try adding this... 
+                                add_special_tokens=False)
+            except:
+                for i in range(len(batch)):
+                    try:
+                        tokenizer([batch[i]], 
+                                  return_tensors = 'pt', 
+                                  padding = True,
+                                  add_special_tokens=False)
+                    except:
+                        # garbage sequence
+                        batch[i] = 'A' * 2    
+                        
+                inputs = tokenizer(batch, 
+                                return_tensors = 'pt', 
+                                padding = True,
+                                add_special_tokens=False)
+
 
             inputs.to(device)
 

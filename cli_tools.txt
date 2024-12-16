@@ -1,0 +1,11 @@
+# trimal
+trimal -in <input_msa> -out <output_msa> -noallgaps
+
+#ccmpred input making
+scripts/convert_alignment.py <msa_file> <msa_format> <output_name>
+
+# run ccmpred
+bin/ccmpred <ccmpred_input> <output_name> -w .95
+
+#ccmpred scoring
+scripts/top_couplings.py <ccmpred_output> -s 4 -n 9999999
