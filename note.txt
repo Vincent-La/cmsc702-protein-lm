@@ -3,7 +3,6 @@ Coupled DCA pairs determined by some cutoff, we shoud look at the output distrib
 
 
 
-
 (2) Precision@L b/w representative structure to generally compare how the methods actually are at contact prediction. 
 Among the Top-L predictions from esm, dca how many are true contacts. 
 We can actually vary L here to get a better feel of what proportion of DCA scores we can reasonably consider to be coupled 
@@ -29,7 +28,7 @@ We already have (2) directly compares ESM/DCA contact prediction with a "true" r
 The top c dca scores are actually coupled because they are actually in contact! We can consider these to be the relevant dca scores
 For the top L ESM predictions, how many of the top c dca score are retrieved
 
-intersect(topL esm contacts, top_c dca)/ c   <-- per sequence
+recall@k <-- intersect(topL esm contacts, top_c dca)/ c   (per sequence in the msa, compute average)
 
 For (1):
 
