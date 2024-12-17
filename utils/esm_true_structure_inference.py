@@ -99,7 +99,12 @@ def precision_at_k(contact_matrix, true_contacts, k, seq_separation_cutoff= 4):
     seq_separation_cutoff: minimum distance b/w residues to consider contacts
 
 '''
+<<<<<<< HEAD
+def recall_at_k(contact_matrix, df_dca, k, seq_separation_cutoff= 4):
+=======
 def recall_at_k(contact_matrix, true_contacts, k, seq_separation_cutoff= 4):
+    return -1
+>>>>>>> 9c17040ef970d5dd3569c7b1432bef3780496671
 
     assert contact_matrix.shape[0] == contact_matrix.shape[1], 'contact matrix should be square!'
     L = contact_matrix.shape[0]
@@ -112,12 +117,22 @@ def recall_at_k(contact_matrix, true_contacts, k, seq_separation_cutoff= 4):
 
     # sorted key,val pairs (decending by prob)
     pairs = [k for k,v in sorted(paired_probs.items(), key = lambda item: -item[1])]
-    
 
+   
+    
+<<<<<<< HEAD
+
+    # TP = 0
+    # for pair in true_contacts[:k]:
+    #     if pair in pairs:
+    #         TP += 1
+=======
+    print(pairs, true_contacts[:k])
     TP = 0
     for pair in true_contacts[:k]:
         if pair in pairs:
             TP += 1
+>>>>>>> 9c17040ef970d5dd3569c7b1432bef3780496671
 
-    recall = TP / k
-    return recall
+    # recall = TP / k
+    # return recall
