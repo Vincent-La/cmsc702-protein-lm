@@ -1,5 +1,6 @@
 *_full
 *.npz
+*_all_plmdca_mapped.csv
 
 # ---- Python .gitignore template ----
 # Byte-compiled / optimized / DLL files
